@@ -1,15 +1,16 @@
 "use client";
 
 import { useUploadContext } from "@/contexts/FilesInfoProvider";
-import { useVerifyFileType } from "@/hooks/Helpers/VerifyFileType";
+import { useVerifyFileType } from "@/hooks/Validation/VerifyFileType";
 import Image from "next/image";
 import { useEffect } from "react";
 
 export function PreviewContent() {
   const { inputFile, expanded, setExpanded }: any = useUploadContext();
-  const File = useVerifyFileType(inputFile);
+  const { verifyTypeForPreview } = useVerifyFileType();
   const defaultImage =
     "https://cdn.icon-icons.com/icons2/1859/PNG/512/images_117937.png";
+  const File = verifyTypeForPreview(inputFile) ?? defaultImage;
 
   useEffect(() => {
     const closeOnEsc = (event: any) => {

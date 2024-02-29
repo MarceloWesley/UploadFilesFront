@@ -9,8 +9,8 @@ export function UploadInput({ children }: UploadTriggerProps) {
   const { setInputFile, inputFile, fileInputRef }: any = useUploadContext();
   const [dragging, setDragging] = useState(false);
 
-  const handleAddImage = (event: any) => {
-    const file = event.target.files[0];
+  const handleAddImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       setInputFile(file);
     }

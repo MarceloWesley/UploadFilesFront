@@ -1,17 +1,13 @@
 "use client";
 
 import { UploadRemoveProps } from "@/components/types";
-import { useUploadContext } from "@/contexts/FilesInfoProvider";
+import { useCleaner } from "@/hooks/Cleaner/cleaner";
 
 export function UploadRemove({ children }: UploadRemoveProps) {
-  const { setInputFile, fileInputRef }: any = useUploadContext();
+  const { cleanUploadFiles } = useCleaner();
 
   const handleRemovePreviewImage = () => {
-    setInputFile("");
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    cleanUploadFiles();
   };
 
   return (

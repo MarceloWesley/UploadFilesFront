@@ -1,40 +1,56 @@
-"use client";
-
-import { useCallback, useState } from "react";
-import axios from "axios";
 import { useUploadContext } from "@/contexts/FilesInfoProvider";
-const BaseUrl = "localhost:3333";
+
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { api } from "@/services/axios";
+import Swal from "sweetalert2";
+import { useCleaner } from "../Cleaner/cleaner";
+import { useVerifyFileType } from "../Validation/VerifyFileType";
 
 export function useUploadFile() {
-  const { setUploadProgress, inputFile }: any = useUploadContext();
+  const { setUploadProgress } = useUploadContext();
+  const { cleanUploadFiles } = useCleaner();
+  const queryClient = useQueryClient();
 
-  const [data, setData] = useState<any>();
-  const [error, setError] = useState();
-
-  const uploadFile = async (file: any) => {
-    try {
-      const response = await axios.post("http://localhost:3333/upload", file, {
-        onUploadProgress: (progressEvent: any) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setUploadProgress(
-            (prevProgress: number) => prevProgress + percentCompleted
-          );
-          console.log(`A imagem  está ${percentCompleted}% carregada... `);
-        },
-      });
-      if (response) {
-        setData(response);
-      }
-    } catch (err: any) {
-      setError(err);
-    }
+  const config = {
+    onUploadProgress: function (progressEvent: any) {
+      const completed = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total
+      );
+      setUploadProgress(completed);
+    },
   };
 
+  const postFile = async (file: FormData) => {
+    const response = await api.post("/images", file, config);
+    return response.data;
+  };
+
+  const mutation = useMutation({
+    mutationFn: postFile,
+    mutationKey: ["upFile"],
+    onSuccess: () => {
+      Swal.fire({
+        title: "Image sent successfully",
+        icon: "success",
+      }).then(() => {
+        cleanUploadFiles();
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["files"],
+      });
+    },
+    onError: (error: any) => {
+      Swal.fire({
+        title: "Error",
+        text: `${error.response.data.error}`,
+        icon: "error",
+      }).then(() => {
+        cleanUploadFiles();
+      });
+    },
+  });
+
   return {
-    uploadFile,
-    data,
-    error,
+    mutation,
   };
 }

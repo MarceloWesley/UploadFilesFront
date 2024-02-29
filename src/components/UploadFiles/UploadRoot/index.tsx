@@ -1,34 +1,44 @@
 "use client";
+
 import { UploadRootProps } from "@/components/types";
-import { UploadProvider } from "@/contexts/FilesInfoProvider";
+import { useUploadContext } from "@/contexts/FilesInfoProvider";
+import { useVerifyFileType } from "@/hooks/Validation/VerifyFileType";
 import { useUploadFile } from "@/hooks/Api/UploadFile";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect } from "react";
 
 export function UploadRoot({ children }: UploadRootProps) {
-  const [file, setFile] = useState<any>();
-  const { uploadFile, data, error } = useUploadFile();
+  const { setUploadFileStatus } = useUploadContext();
+  const { mutation } = useUploadFile();
+  const { verifyTypeFileToSendRequest } = useVerifyFileType();
 
-  const handleSubmit = (event: any) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData();
-    formData.append("file", event.target.file.files[0]);
+    const form = event.target as HTMLFormElement;
+    formData.append("file", form.file.files[0]);
 
-    uploadFile(formData);
+    const error = verifyTypeFileToSendRequest(form.file.files[0]);
 
     if (error) {
-      console.log("error", error);
+      return;
+    } else {
+      mutation.mutate(formData);
     }
   };
 
+  useEffect(() => {
+    if (mutation.status !== "idle") {
+      setUploadFileStatus(mutation.status);
+    }
+  }, [mutation.status, setUploadFileStatus]);
+
   return (
-    <UploadProvider>
-      <form
-        encType="multipart/form-data"
-        onSubmit={handleSubmit}
-        className="flex flex-wrap gap-5"
-      >
-        {children}
-      </form>
-    </UploadProvider>
+    <form
+      encType="multipart/form-data"
+      onSubmit={handleSubmit}
+      className="flex flex-wrap gap-5"
+    >
+      {children}
+    </form>
   );
 }

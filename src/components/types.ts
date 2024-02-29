@@ -1,33 +1,44 @@
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
 export type UploadRootProps = {
-    children: ReactNode;
-}
+  children: ReactNode;
+};
 
 export type UploadTriggerProps = {
-    children?: ReactNode;
-}
+  children?: ReactNode;
+};
 
 export type UploadPlaceholderProps = {
-    children?: ReactNode;
-}
+  children?: ReactNode;
+};
 
 export type UploadPreviewProps = {
-    children?: ReactNode;
-}
+  children?: ReactNode;
+};
 
 export type UploadSaveProps = {
-    children?: ReactNode;
-}
+  children?: ReactNode;
+};
 
 export type UploadRemoveProps = {
-    children?: ReactNode;
-}
+  children?: ReactNode;
+};
+
+export type DeleteButtonProps = {
+  children?: ReactNode;
+  name: string;
+};
+
+export type DownloadButtonProps = {
+  children?: ReactNode;
+  file: string;
+  fileName: string;
+};
 
 export type UploadExpandProps = {
-    children?: ReactNode;
-}
+  children?: ReactNode;
+};
 
 export type UploadImageActionsProps = {
-    children?: ReactNode;
-}
+  children?: ReactNode;
+};

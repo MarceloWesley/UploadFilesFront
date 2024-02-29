@@ -2,13 +2,18 @@
 
 import { UploadExpandProps } from "@/components/types";
 import { useUploadContext } from "@/contexts/FilesInfoProvider";
+import { useEffect } from "react";
 
 export function UploadExpand({ children }: UploadExpandProps) {
   const { expanded, setExpanded }: any = useUploadContext();
-console.log(expanded)
+
   const handleToggleExpanded = () => {
-    setExpanded(!expanded);
+    setExpanded((prev) => !prev);
   };
+
+  useEffect(() => {
+    setExpanded((prev) => !prev);
+  }, [setExpanded]);
 
   return (
     <button
